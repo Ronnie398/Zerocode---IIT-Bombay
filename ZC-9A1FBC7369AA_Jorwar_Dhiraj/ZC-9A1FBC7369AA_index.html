@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bill Splitter &amp; Expense Ledger</title>
+    <meta name="description"
+        content="Fast, precision dinner bill splitter for friend groups with shared, solo, and excluded item consumption breakdown." />
+    <meta property="og:title" content="Bill Splitter &amp; Expense Ledger" />
+    <meta property="og:description"
+        content="Fast, precision dinner bill splitter for friend groups with shared, solo, and excluded item consumption breakdown." />
+    <meta property="og:type" content="website" />
+    <link rel="stylesheet" href="ZC-9A1FBC7369AA_style.css">
+</head>
+
+<body>
+    <!-- Top Bar Contract: 3 Zones (Brand, Nav Links, Primary Actions) -->
+    <header class="top-header">
+        <div class="top-header-inner">
+            <a href="#top" class="brand-mark">TableSplit Ledger</a>
+
+            <nav class="top-nav" aria-label="Primary Navigation">
+                <a href="#section-bill-details" class="top-nav-link">Bill &amp; People</a>
+                <a href="#section-consumption" class="top-nav-link">Consumption Items</a>
+                <a href="#section-settlement" class="top-nav-link">Settlement Shares</a>
+                <a href="#section-history" class="top-nav-link">Saved History</a>
+            </nav>
+
+            <div class="top-actions">
+                <button type="button" id="loadMeetupTestBtn" class="btn btn-secondary btn-sm"
+                    title="Load Meetup Dinner Preset">
+                    Load Meetup Preset
+                </button>
+                <button type="button" id="themeToggleBtn" class="btn btn-secondary btn-sm"
+                    aria-label="Toggle Dark or Light Mode">
+                    Theme
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main id="top" class="workspace">
+        <section class="intro-banner">
+            <h1 class="intro-title">Group Dinner Bill Splitter &amp; Itemized Settlement</h1>
+            <div class="intro-meta">
+                <span>Instant itemized calculation</span>
+                <span aria-hidden="true">·</span>
+                <span>Common dishes + solo &amp; partial-group orders</span>
+                <span aria-hidden="true">·</span>
+                <span>Auto-persisted across page reloads</span>
+            </div>
+        </section>
+
+        <div class="app-grid">
+            <!-- LEFT COLUMN: INPUTS & CONSUMPTION ITEMS -->
+            <div class="input-column">
+                <!-- 1. Occasion, Bill Amount, Number of People, Name of People -->
+                <section id="section-bill-details" class="panel" aria-labelledby="heading-bill-details">
+                    <div class="panel-header">
+                        <h2 id="heading-bill-details" class="panel-title">01. Occasion, Total Bill &amp; Diners</h2>
+                        <span class="panel-subtitle">Required core bill parameters</span>
+                    </div>
+
+                    <div class="form-grid form-grid-3">
+                        <div class="field-group">
+                            <label for="occasionInput" class="field-label">
+                                <span>Occasion Name</span>
+                            </label>
+                            <input type="text" id="occasionInput" class="input-control" placeholder="e.g. Meetup"
+                                value="Meetup" />
+                        </div>
+
+                        <div class="field-group">
+                            <label for="billAmountInput" class="field-label">
+                                <span>Total Bill Amount</span>
+                                <span class="field-hint">Commas allowed</span>
+                            </label>
+                            <input type="text" id="billAmountInput" class="input-control input-num"
+                                placeholder="e.g. 4,725" value="4,725" inputmode="decimal" />
+                        </div>
+
+                        <div class="field-group">
+                            <label for="numPeopleInput" class="field-label">
+                                <span>Number of People</span>
+                                <span class="field-hint">1–50</span>
+                            </label>
+                            <input type="number" id="numPeopleInput" class="input-control input-num" min="1" max="50"
+                                step="1" value="4" />
+                        </div>
+                    </div>
+
+                    <div class="field-group" style="margin-top: 1.15rem;">
+                        <div class="field-label">
+                            <span>Name of People (Roman Indexed I, II, III, IV...)</span>
+                            <span class="field-hint">Updates shares &amp; item assignments live</span>
+                        </div>
+                        <div id="peopleNamesContainer" class="people-names-grid"></div>
+                    </div>
+                </section>
+
+                <!-- 2. Consumption Items: Common first, then solo / partial items -->
+                <section id="section-consumption" class="panel" aria-labelledby="heading-consumption">
+                    <div class="panel-header">
+                        <h2 id="heading-consumption" class="panel-title">02. Consumption Items (Common First, Then
+                            Individual/Subset)</h2>
+                        <button type="button" id="addSpecialItemBtn" class="btn btn-secondary btn-sm">
+                            + Add Specific Item
+                        </button>
+                    </div>
+
+                    <!-- Common consumption items first -->
+                    <div class="common-bar">
+                        <div class="field-group">
+                            <label for="commonCountInput" class="field-label">
+                                <span>Common Consumption Items Count</span>
+                                <span class="field-hint">Shared by all</span>
+                            </label>
+                            <input type="number" id="commonCountInput" class="input-control input-num" min="0" step="1"
+                                value="4" />
+                        </div>
+
+                        <div class="field-group">
+                            <label for="commonNamesInput" class="field-label">
+                                <span>Common Consumption Item Names</span>
+                                <span class="field-hint">Remainder of bill shared equally</span>
+                            </label>
+                            <input type="text" id="commonNamesInput" class="input-control"
+                                placeholder="e.g. Starters, Main Course, Breads, Rice"
+                                value="Starters, Main Course, Breads, Accompaniments" />
+                        </div>
+                    </div>
+
+                    <!-- Individual / Excluded / Custom consumption items -->
+                    <div class="field-group">
+                        <div class="field-label" style="margin-bottom: 0.4rem;">
+                            <span>Individual / Excluded / Custom Items</span>
+                            <span class="field-hint">Specify solo orders (e.g. Deserts) or group-except-one orders (e.g.
+                                Drinks)</span>
+                        </div>
+                        <div id="specialItemsContainer" class="items-list"></div>
+                    </div>
+
+                    <!-- Optional Extras: Tip Slider & Cent Reconciliation -->
+                    <div class="extras-bar">
+                        <div class="field-group">
+                            <label for="tipSlider" class="field-label">
+                                <span>Optional Service Charge / Tip (%)</span>
+                                <strong id="tipValueLabel" class="input-num">0%</strong>
+                            </label>
+                            <input type="range" id="tipSlider" class="range-slider" min="0" max="25" step="1"
+                                value="0" />
+                        </div>
+
+                        <div class="field-group">
+                            <label class="consumer-check-label" style="width: fit-content;">
+                                <input type="checkbox" id="exactReconcileToggle" />
+                                <span>Assign fractional rounding remainder cents to Person I (keep off for standard
+                                    2-decimal truncation)</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- 3. Button that shows what each person pays -->
+                    <div style="margin-top: 1.25rem; display: flex; flex-wrap: wrap; gap: 0.75rem;">
+                        <button type="button" id="calculateSplitBtn" class="btn btn-primary" style="flex: 1;">
+                            Calculate What Each Person Pays
+                        </button>
+                        <button type="button" id="resetAllBtn" class="btn btn-danger-outline">
+                            Reset Form
+                        </button>
+                    </div>
+                </section>
+            </div>
+
+            <!-- RIGHT COLUMN: RESULTS & PERSISTENT RECEIPT -->
+            <div class="output-column sticky-column">
+                <section id="section-settlement" class="panel" aria-labelledby="heading-settlement">
+                    <div class="panel-header">
+                        <h2 id="heading-settlement" class="panel-title">03. Settlement Breakdown &amp; Shares</h2>
+                        <button type="button" id="copyReceiptBtn" class="btn btn-secondary btn-sm">
+                            Copy Receipt
+                        </button>
+                    </div>
+
+                    <!-- Validation message banner (shown if bill or people is empty, zero, or negative) -->
+                    <div id="validationErrorBanner" class="validation-banner hidden" role="alert" aria-live="polite">
+                    </div>
+
+                    <!-- Shown when validation fails so no result is displayed -->
+                    <div id="noResultNotice" class="warning-banner hidden">
+                        No settlement result is displayed until a valid positive bill amount and number of people are
+                        entered.
+                    </div>
+
+                    <!-- Result container (hidden when inputs are invalid) -->
+                    <div id="resultsContentWrapper">
+                        <div class="ledger-summary-kv">
+                            <div class="kv-block">
+                                <span class="kv-label">Occasion Name</span>
+                                <span id="kvOccasion" class="kv-value">Meetup</span>
+                            </div>
+                            <div class="kv-block">
+                                <span class="kv-label">Total Bill</span>
+                                <span id="kvTotal" class="kv-value">4,725</span>
+                            </div>
+                            <div class="kv-block">
+                                <span class="kv-label">Common Pool</span>
+                                <span id="kvCommonPool" class="kv-value">3,825.00</span>
+                            </div>
+                            <div class="kv-block">
+                                <span class="kv-label">Common / Person</span>
+                                <span id="kvEachCommon" class="kv-value">956.25</span>
+                            </div>
+                        </div>
+
+                        <div class="shares-table-wrap">
+                            <table class="shares-table" aria-label="Individual Shares Table">
+                                <thead>
+                                    <tr>
+                                        <th>Name Of People</th>
+                                        <th class="col-num">Common</th>
+                                        <th class="col-num">Specific</th>
+                                        <th class="col-num">Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="sharesTableBody"></tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="3">Settled Bill Total</td>
+                                        <td id="sharesTableFootTotal" class="col-num">Total: 4,725</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+
+                        <div class="field-group">
+                            <div class="field-label">
+                                <span>Formatted Settlement Output</span>
+                                <span class="field-hint">Exact verification summary</span>
+                            </div>
+                            <pre id="exactReceiptOutput" class="receipt-pre" aria-live="polite"></pre>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Extra Feature: Saved Split History -->
+                <section id="section-history" class="panel" aria-labelledby="heading-history">
+                    <div class="panel-header">
+                        <h2 id="heading-history" class="panel-title">04. Recent Saved Splits</h2>
+                        <button type="button" id="clearHistoryBtn" class="btn btn-secondary btn-sm">
+                            Clear History
+                        </button>
+                    </div>
+                    <div id="historyContainer" class="history-list"></div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <span>TableSplit Ledger · Vanilla HTML, CSS &amp; JavaScript · Persistent Local Storage Enabled</span>
+    </footer>
+
+    <script src="ZC-9A1FBC7369AA_script.js"></script>
+</body>
+
+</html>
